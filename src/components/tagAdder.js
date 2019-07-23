@@ -49,7 +49,7 @@ class TagAdder extends React.Component {
                         if (tag.name.toLowerCase().includes(filter.toLowerCase())) {
                             return (
                                 <CSSTransition key={`all_${tag.id}`} timeout={250} classNames={`tag`}>
-                                    <TagButton key={`allTags_${tag.name}_${uniqueId}`} val={tag.name} active={false} callback={callback} />
+                                    <TagButton key={`allTags_${tag.name}_${uniqueId}`} label={tag.name} val={tag.id} active={false} callback={callback} />
                                 </CSSTransition>
                             )
                         } else {

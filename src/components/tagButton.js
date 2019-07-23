@@ -52,9 +52,9 @@ const Button = Styled.button`
     }
 `
 
-const TagButton = ({ val, active, callback }) => {
+const TagButton = ({ label, val, active, callback }) => {
     return (
-        <Button onClick={callback} className={(active)?'active':''} value={val}>{val}</Button>
+        <Button onClick={callback} className={(active)?'active':''} value={val}>{label}</Button>
     )
 }
 

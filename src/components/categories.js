@@ -1,4 +1,5 @@
 import React from 'react'
+import { Redirect } from 'react-router'
 import PageTitle from './pageTitle'
 import FieldContainer from './fieldContainer'
 import TextField from './textField'
@@ -6,7 +7,13 @@ import AddButton from './addButton'
 
 const Categories = ({ data, methods }) => {
 
-    const { name } = data.templates.category
+    if (!data.connection.verified || !data.data.loaded) {
+        return (
+            <Redirect to='/connection' />
+        )
+    }
+
+    const { name, uploading } = data.templates.category
     const { 
         handleTemplateCategoryNameChange,
         handleAddCategory
@@ -16,7 +23,7 @@ const Categories = ({ data, methods }) => {
         <>
             <PageTitle>Manage Categories</PageTitle>
             <FieldContainer title='New'>
-                <TextField label='Name' val={name} onChangeFunction={handleTemplateCategoryNameChange} />
+                <TextField label='Name' val={name} validation={(uploading)?'checking':null} onChangeFunction={handleTemplateCategoryNameChange} />
                 <AddButton val='Add Category' callback={handleAddCategory} />
             </FieldContainer>
         </>

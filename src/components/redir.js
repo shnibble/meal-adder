@@ -3,7 +3,7 @@ import { Redirect } from 'react-router'
 
 const Redir = () => {
     return (
-        <Redirect to='/meals' />
+        <Redirect to='/connection' />
     )
 }
 

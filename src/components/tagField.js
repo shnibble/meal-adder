@@ -27,8 +27,8 @@ const TagField = ({ arr, callback }) => {
             <TagContainer>
                 <TransitionGroup>
                     {arr.map((tag) => (
-                        <CSSTransition key={`active_${tag}`} timeout={250} classNames={`tag`}>
-                            <TagButton key={`activeTags_${tag}_${uniqueId}`} val={tag} active={true} callback={callback} />
+                        <CSSTransition key={`active_${tag.name}`} timeout={250} classNames={`tag`}>
+                            <TagButton key={`activeTags_${tag.name}_${uniqueId}`} label={tag.name} val={tag.id} active={true} callback={callback} />
                         </CSSTransition>
                     ))}
                 </TransitionGroup>

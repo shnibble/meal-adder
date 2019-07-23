@@ -1,4 +1,5 @@
 import React from 'react'
+import { Redirect } from 'react-router'
 import FieldContainer from './fieldContainer'
 import TextField from './textField'
 import TextAreaField from './textAreaField'
@@ -9,8 +10,14 @@ import AddButton from './addButton'
 
 const Meals = ({ data, methods }) => {
 
-    const { allCategories, allOrigins, allTags } = data
-    const { name, description, categories, origins, tags } = data.templates.meal
+    if (!data.connection.verified || !data.data.loaded) {
+        return (
+            <Redirect to='/connection' />
+        )
+    }
+
+    const { allCategories, allOrigins, allTags } = data.data
+    const { name, description, categories, origins, tags, uploaded } = data.templates.meal
     const { 
         handleTemplateMealNameChange, 
         handleTemplateMealDescriptionChange, 
@@ -23,9 +30,10 @@ const Meals = ({ data, methods }) => {
     return (
         <>
             <PageTitle>Add Meal</PageTitle>
+            {(uploaded)?<span>Uploaded!</span>:null}
             <FieldContainer title='Details'>
-                <TextField label='Name' val={name} onChangeFunction={handleTemplateMealNameChange}/>
-                <TextAreaField label='Description' val={description} onChangeFunction={handleTemplateMealDescriptionChange}/>
+                <TextField label='Name' val={name} validation={(name.length > 0)?true:null} onChangeFunction={handleTemplateMealNameChange}/>
+                <TextAreaField label='Description' val={description} validation={(description.length > 0)?true:null} onChangeFunction={handleTemplateMealDescriptionChange}/>
             </FieldContainer>
             <FieldContainer title='Categories'>
                 <TagField arr={categories} callback={handleTemplateMealCategoryChange}/>

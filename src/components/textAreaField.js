@@ -1,6 +1,9 @@
 import React from 'react'
 import Styled from 'styled-components'
 import newId from '../utils/newId'
+import SmallLoadingAnimation from './smallLoadingAnimation'
+import IconX from './iconX'
+import IconCheck from './iconCheck'
 
 const Container = Styled.div`
     position: relative;
@@ -43,12 +46,26 @@ const Label = Styled.label`
     transition: all .15s ease-in;
 `
 
-const TextAreaField = ({ label, val, onChangeFunction }) => {
+const TextAreaField = ({ label, val, validation=null, onChangeFunction }) => {
     const uniqueId = newId()
+    let d = null
+    switch (validation) {
+        case 'checking':
+            d = <SmallLoadingAnimation />
+            break
+        case true:
+            d = <IconCheck />
+            break
+        case false:
+            d = <IconX />
+            break
+        default:
+            break
+    }
     return (
         <Container>
             <Input id={`labelForTextField_${uniqueId}`} className={(val.length > 0)?'entered':null} type='text' value={val} onChange={onChangeFunction} />
-            <Label htmlFor={`labelForTextField_${uniqueId}`}>{label}</Label>
+            <Label htmlFor={`labelForTextField_${uniqueId}`}>{label} {d}</Label>
         </Container>
     )
 }

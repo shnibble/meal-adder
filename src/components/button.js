@@ -1,9 +1,9 @@
 import React from 'react'
 import Styled from 'styled-components'
 
-const Button = Styled.button`
-    display: block;
-    margin: 10px auto;
+const Input = Styled.button`
+    display: inline-block;
+    margin: 10px 5px;
     padding: 8px;
     width: 100%;
     max-width: 200px;
@@ -32,10 +32,10 @@ const Button = Styled.button`
     }
 `
 
-const AddButton = ({ val, enabled=true, callback }) => {
+const Button = ({ val, enabled=true, callback }) => {
     return (
-        <Button value={val} disabled={!enabled} onClick={callback}>{val}</Button>
+        <Input value={val} disabled={!enabled} onClick={callback}>{val}</Input>
     )
 }
 
-export default AddButton
+export default Button

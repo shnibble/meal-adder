@@ -2,19 +2,22 @@ import React from 'react'
 import styled from 'styled-components'
 
 const Container = styled.div`
-    min-height: 200px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: rgba(255,255,255,0.95);
-    z-index: 1;
+    position: relative;
+    z-index: 2;
 `
-
+const InnerContainer = styled.div`
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+    height: 100vh;
+    background: rgba(255,255,255,0.85);
+`
 const Loading = styled.div`
     position: relative;
     width: 60px;
     height: 60px;
-    margin: auto;
+    margin: 20px auto;
     background-color: transparent;
     border-radius: 30px;
     box-shadow: 0 0 7px 6px rgba(255, 106, 0, 0.1);
@@ -80,21 +83,23 @@ const Loading = styled.div`
 const LoadingAnimation = () => {
     return (
         <Container>
-            <Loading>
-                <div>Loading</div>
-                <div>
-                    <div></div>
-                </div>
-                <div>
-                    <div></div>
-                </div>
-                <div>
-                    <div></div>
-                </div>
-                <div>
-                    <div></div>
-                </div>
-            </Loading>
+            <InnerContainer>
+                <Loading>
+                    <div>Loading</div>
+                    <div>
+                        <div></div>
+                    </div>
+                    <div>
+                        <div></div>
+                    </div>
+                    <div>
+                        <div></div>
+                    </div>
+                    <div>
+                        <div></div>
+                    </div>
+                </Loading>
+            </InnerContainer>
         </Container>
     )
 }

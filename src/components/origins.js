@@ -1,4 +1,5 @@
 import React from 'react'
+import { Redirect } from 'react-router'
 import PageTitle from './pageTitle'
 import FieldContainer from './fieldContainer'
 import TextField from './textField'
@@ -6,7 +7,13 @@ import AddButton from './addButton'
 
 const Origins = ({ data, methods }) => {
 
-    const { name } = data.templates.origin
+    if (!data.connection.verified || !data.data.loaded) {
+        return (
+            <Redirect to='/connection' />
+        )
+    }
+
+    const { name, uploading } = data.templates.origin
     const { 
         handleTemplateOriginNameChange,
         handleAddOrigin
@@ -16,7 +23,7 @@ const Origins = ({ data, methods }) => {
         <>
             <PageTitle>Manage Origins</PageTitle>
             <FieldContainer title='New'>
-                <TextField label='Name' val={name} onChangeFunction={handleTemplateOriginNameChange} />
+                <TextField label='Name' val={name} validation={(uploading)?'checking':null} onChangeFunction={handleTemplateOriginNameChange} />
                 <AddButton val='Add Origin' callback={handleAddOrigin} />
             </FieldContainer>
         </>

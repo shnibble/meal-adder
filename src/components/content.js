@@ -3,11 +3,7 @@ import { Route } from 'react-router-dom'
 import { CSSTransition } from 'react-transition-group'
 import Styled from 'styled-components'
 import LoadingAnimation from './loadingAnimation'
-import Redir from './redir'
-import Meals from './meals'
-import Categories from './categories'
-import Origins from './origins'
-import Tags from './tags'
+import routes from '../routes.js'
 
 const Container = Styled.div`
     position: relative;
@@ -41,57 +37,30 @@ const Container = Styled.div`
         top: 100px;
     }
 `
-const ErrorTitle = Styled.h2`
-    color: #ff0000;
-    text-align: center;
-`
-const ErrorMessage = Styled.p`
-    color: #ff6666;
-    text-align: center;
-`
 
 const Content = ({ data, methods }) => {
-    
-    const routes = [
-        { path: '/', name: 'DefaultRedirect', Component: Redir , componentData: null },
-        { path: '/meals/', name: 'Meals', Component: Meals, componentData: data },
-        { path: '/categories/', name: 'Categories', Component: Categories, componentData: data },
-        { path: '/origins/', name: 'Origins', Component: Origins, componentData: data },
-        { path: '/tags/', name: 'Tags', Component: Tags, componentData: data }
-    ]
 
     return (
         <Container>
-            {(data.loading)
-            ?
-            <div className="page">
-                <LoadingAnimation />
-            </div>          
-            :
-            (data.error)
-            ?
-            <div className="page">
-                <ErrorTitle>Error</ErrorTitle>
-                <ErrorMessage>{data.errorText}</ErrorMessage>
-            </div>
-            :
-            routes.map(({ path, Component, componentData }) => (
-                <Route key={path} exact path={path}>
-                  {({ match }) => (
-                    <CSSTransition
-                      in={match != null}
-                      timeout={250}
-                      classNames="page"
-                      unmountOnExit
-                    >
-                      <div className="page">
-                        <Component data={componentData} methods={methods} />
-                      </div>
-                    </CSSTransition>
-                  )}
-                </Route>
-            ))
-            }
+            {routes.map(({ path, Component }) => {
+                return (
+                    <Route key={path} exact path={path}>
+                    {({ match }) => (
+                        <CSSTransition
+                        in={match != null}
+                        timeout={250}
+                        classNames="page"
+                        unmountOnExit
+                        >
+                        <div className="page">
+                            {(data.data.loading)?<LoadingAnimation />:null}
+                            <Component data={data} methods={methods} />
+                        </div>
+                        </CSSTransition>
+                    )}
+                    </Route>
+                )
+            })}
         </Container>
     )
 }
