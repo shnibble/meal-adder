@@ -17,7 +17,7 @@ const Meals = ({ data, methods }) => {
     }
 
     const { allCategories, allOrigins, allTags } = data.data
-    const { name, description, categories, origins, tags, uploaded } = data.templates.meal
+    const { name, description, categories, origins, tags } = data.templates.meal
     const { 
         handleTemplateMealNameChange, 
         handleTemplateMealDescriptionChange, 
@@ -27,10 +27,14 @@ const Meals = ({ data, methods }) => {
         handleAddMeal
     } = methods
 
+    let validated = true
+    if (!name.length || !description.length || !categories.length || !origins.length) {
+        validated = false
+    }
+
     return (
         <>
             <PageTitle>Add Meal</PageTitle>
-            {(uploaded)?<span>Uploaded!</span>:null}
             <FieldContainer title='Details'>
                 <TextField label='Name' val={name} validation={(name.length > 0)?true:null} onChangeFunction={handleTemplateMealNameChange}/>
                 <TextAreaField label='Description' val={description} validation={(description.length > 0)?true:null} onChangeFunction={handleTemplateMealDescriptionChange}/>
@@ -49,7 +53,7 @@ const Meals = ({ data, methods }) => {
             </FieldContainer>
             
             
-            <AddButton val='Add Meal' callback={handleAddMeal} />
+            <AddButton val='Add Meal' enabled={validated} callback={handleAddMeal} />
         </>
     )
 }

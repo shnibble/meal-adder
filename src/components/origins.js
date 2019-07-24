@@ -13,18 +13,23 @@ const Origins = ({ data, methods }) => {
         )
     }
 
-    const { name, uploading } = data.templates.origin
+    const { name } = data.templates.origin
     const { 
         handleTemplateOriginNameChange,
         handleAddOrigin
     } = methods
 
+    let validated = true
+    if (!name.length) {
+        validated = false
+    }
+
     return (
         <>
             <PageTitle>Manage Origins</PageTitle>
             <FieldContainer title='New'>
-                <TextField label='Name' val={name} validation={(uploading)?'checking':null} onChangeFunction={handleTemplateOriginNameChange} />
-                <AddButton val='Add Origin' callback={handleAddOrigin} />
+                <TextField label='Name' val={name} validation={(name.length > 0)?true:null} onChangeFunction={handleTemplateOriginNameChange} />
+                <AddButton val='Add Origin' enabled={validated} callback={handleAddOrigin} />
             </FieldContainer>
         </>
     )

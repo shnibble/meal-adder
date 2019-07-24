@@ -14,7 +14,7 @@ const Notification = Styled.div`
     border-radius: 3px;
     background: #e6f4ff;
     box-shadow: 0 0 2px 1px rgba(0,0,0,0.1);
-    transition: all .25s ease;
+    transition: all .5s ease;
 
     &.notification-enter {
         opacity: 0;
@@ -36,7 +36,7 @@ const ErrorNotification = Styled.div`
     border-radius: 3px;
     background: #ffe6e6;
     box-shadow: 0 0 2px 1px rgba(0,0,0,0.1);
-    transition: all .25s ease;
+    transition: all .5s ease;
 
     &.notification-enter {
         opacity: 0;
@@ -168,7 +168,7 @@ class Notifications extends React.Component {
             <Container>
                 <TransitionGroup>
                 {notifications.map((n, index) => 
-                    <CSSTransition key={`notification_${index}`} timeout={250} classNames={`notification`}>
+                    <CSSTransition key={`notification_${index}`} timeout={500} classNames={`notification`}>
                         {(n.error)
                         ?
                         <ErrorNotification>

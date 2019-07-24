@@ -13,18 +13,23 @@ const Categories = ({ data, methods }) => {
         )
     }
 
-    const { name, uploading } = data.templates.category
+    const { name } = data.templates.category
     const { 
         handleTemplateCategoryNameChange,
         handleAddCategory
     } = methods
 
+    let validated = true
+    if (!name.length) {
+        validated = false
+    }
+
     return (
         <>
             <PageTitle>Manage Categories</PageTitle>
             <FieldContainer title='New'>
-                <TextField label='Name' val={name} validation={(uploading)?'checking':null} onChangeFunction={handleTemplateCategoryNameChange} />
-                <AddButton val='Add Category' callback={handleAddCategory} />
+                <TextField label='Name' val={name} validation={(name.length > 0)?true:null} onChangeFunction={handleTemplateCategoryNameChange} />
+                <AddButton val='Add Category' enabled={validated} callback={handleAddCategory} />
             </FieldContainer>
         </>
     )

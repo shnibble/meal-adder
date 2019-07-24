@@ -36,7 +36,6 @@ const initialAppState = {
     templates: {
         meal: {
             uploading: false,
-            uploaded: false,
             name: '',
             description: '',
             categories: [],
@@ -45,17 +44,14 @@ const initialAppState = {
         },
         category: {
             uploading: false,
-            uploaded: false,
             name: ''
         },
         origin: {
             uploading: false,
-            uploaded: false,
             name: ''
         },
         tag: {
             uploading: false,
-            uploaded: false,
             name: ''
         }
     }
@@ -177,69 +173,48 @@ class App extends React.Component {
     }
 
     handleAddMeal = async () => {
-        console.log('Adding meal...')
-
         const stateObj = {...this.state}
-        const meal = stateObj.templates.meal
         stateObj.templates.meal.uploading = true
         this.setState(stateObj)
 
-        // validation
         let validated = true
-        let data = {
-            key: this.state.connection.key,
-            name: this.state.templates.meal.name,
-            description: this.state.templates.meal.description,
-            categories: this.state.templates.meal.categories,
-            origins: this.state.templates.meal.origins,
-            tags: this.state.templates.meal.tags
-        }
-
+        let data = {}
         if (
-            data.name.length <= 0 ||
-            data.description.length <= 0 ||
-            data.categories.length <= 0 || 
-            data.origins.length <= 0
+            this.state.templates.meal.name.length <= 0 ||
+            this.state.templates.meal.description.length <= 0 ||
+            this.state.templates.meal.categories.length <= 0 || 
+            this.state.templates.meal.origins.length <= 0
         ) {
             validated = false
         } else {
             data = {
                 key: this.state.connection.key,
-                name: meal.name,
-                description: meal.description,
-                categories: meal.categories.map(item => item.id),
-                origins: meal.origins.map(item => item.id),
-                tags: meal.tags.map(item => item.id) || []
+                name: this.state.templates.meal.name,
+                description: this.state.templates.meal.description,
+                categories: this.state.templates.meal.categories.map(item => item.id),
+                origins: this.state.templates.meal.origins.map(item => item.id),
+                tags: this.state.templates.meal.tags.map(item => item.id) || []
             }
         }
 
         if (validated) {
-            // await axios 
-            //     .post(`${this.state.connection.location}/upload/meal`, data)
-            //     .then(() => {
-                    // stateObj.templates.category.uploading = false
-                    // stateObj.templates.category.uploaded = true
-                    // stateObj.templates.category.description = ''
-                    // stateObj.templates.category.categories = []
-                    // stateObj.templates.category.origins = []
-                    // stateObj.templates.category.tags = []
-                    // this.setState(stateObj)
-            //     })
-            //     .catch(() => {
-            //         stateObj.templates.category.uploading = false
-            //         stateObj.error.active = true
-            //         stateObj.error.title = 'Update Error'
-            //         stateObj.error.text = 'Could not add meal. It could be a duplicate entry or an issue with the API server.'
-            //         this.setState(stateObj)
-            //     })
-            stateObj.templates.meal.uploading = false
-            stateObj.templates.meal.name = ''
-            stateObj.templates.meal.description = ''
-            stateObj.templates.meal.categories = []
-            stateObj.templates.meal.origins = []
-            stateObj.templates.meal.tags = []
-            this.addNotification('Success', 'Successfully added new meal. (PLACEHOLDER MESSAGE: the meal was not actually added but the validation worked)')
-            this.setState(stateObj)
+            await axios 
+                .post(`${this.state.connection.location}/upload/meal`, data)
+                .then(() => {
+                    stateObj.templates.meal.uploading = false
+                    stateObj.templates.meal.name = ''
+                    stateObj.templates.meal.description = ''
+                    stateObj.templates.meal.categories = []
+                    stateObj.templates.meal.origins = []
+                    stateObj.templates.meal.tags = []
+                    this.addNotification('Success', 'Successfully added new meal.')
+                    this.setState(stateObj)
+                })
+                .catch(() => {
+                    stateObj.templates.meal.uploading = false
+                    this.addNotification('Update Error', 'Could not add meal. It could be a duplicate entry or an issue with the API server.', true)
+                    this.setState(stateObj)
+                })
         } else {
             stateObj.templates.meal.uploading = false
             this.addNotification('Validation Error', 'Could not validate data. Please ensure the name and description fields are entered and at least one category and one origin are chosen.', true)
@@ -248,21 +223,28 @@ class App extends React.Component {
     }
 
     handleAddCategory = async () => {
-        const newCategoryName = this.state.templates.category.name
         const stateObj = {...this.state}
         stateObj.templates.category.uploading = true
         this.setState(stateObj)
-        if (newCategoryName.length === 0) {
+
+        let validated = true    
+        let data = {}
+        if (this.state.templates.category.name <= 0) {
+            validated = false
         } else {
+            data = {
+                key: this.state.connection.key,
+                name: this.state.templates.category.name
+            }
+        }
+
+        if (validated) {
             await axios 
-                .post(`${this.state.connection.location}/upload/category`, {
-                    key: this.state.connection.key,
-                    name: newCategoryName
-                })
+                .post(`${this.state.connection.location}/upload/category`, data)
                 .then(result => {
                     stateObj.data.allCategories.push({
                         id: result.data[0],
-                        name: newCategoryName
+                        name: data.name
                     })
                     stateObj.templates.category.uploading = false
                     stateObj.templates.category.name = ''
@@ -274,25 +256,36 @@ class App extends React.Component {
                     this.addNotification('Update Error', 'Could not add category. It could be a duplicate entry or an issue with the API server.', true)
                     this.setState(stateObj)
                 })
+        } else {
+            stateObj.templates.category.uploading = false
+            this.addNotification('Validation Error', 'Could not validate data. Please ensure that a valid category name is entered.', true)
+            this.setState(stateObj)
         }
     }
 
     handleAddOrigin = async () => {
-        const newOriginName = this.state.templates.origin.name
         const stateObj = {...this.state}
         stateObj.templates.origin.uploading = true
         this.setState(stateObj)
-        if (newOriginName.length === 0) {
+
+        let validated = true    
+        let data = {}
+        if (this.state.templates.origin.name <= 0) {
+            validated = false
         } else {
+            data = {
+                key: this.state.connection.key,
+                name: this.state.templates.origin.name
+            }
+        }
+
+        if (validated) {
             await axios 
-                .post(`${this.state.connection.location}/upload/origin`, {
-                    key: this.state.connection.key,
-                    name: newOriginName
-                })
+                .post(`${this.state.connection.location}/upload/origin`, data)
                 .then(result => {
                     stateObj.data.allOrigins.push({
                         id: result.data[0],
-                        name: newOriginName
+                        name: data.name
                     })
                     stateObj.templates.origin.uploading = false
                     stateObj.templates.origin.name = ''
@@ -304,25 +297,37 @@ class App extends React.Component {
                     this.addNotification('Update Error', 'Could not add origin. It could be a duplicate entry or an issue with the API server.', true)
                     this.setState(stateObj)
                 })
+        } else {
+
+            stateObj.templates.origin.uploading = false
+            this.addNotification('Validation Error', 'Could not validate data. Please ensure that a valid origin name is entered.', true)
+            this.setState(stateObj)
         }
     }
 
     handleAddTag = async () => {
-        const newTagName = this.state.templates.tag.name
         const stateObj = {...this.state}
         stateObj.templates.tag.uploading = true
         this.setState(stateObj)
-        if (newTagName.length === 0) {
+
+        let validated = true    
+        let data = {}
+        if (this.state.templates.tag.name <= 0) {
+            validated = false
         } else {
+            data = {
+                key: this.state.connection.key,
+                name: this.state.templates.tag.name
+            }
+        }
+
+        if (validated) {
             await axios 
-                .post(`${this.state.connection.location}/upload/tag`, {
-                    key: this.state.connection.key,
-                    name: newTagName
-                })
+                .post(`${this.state.connection.location}/upload/tag`, data)
                 .then(result => {
                     stateObj.data.allTags.push({
                         id: result.data[0],
-                        name: newTagName
+                        name: data.name
                     })
                     stateObj.templates.tag.uploading = false
                     stateObj.templates.tag.name = ''
@@ -334,6 +339,10 @@ class App extends React.Component {
                     this.addNotification('Update Error', 'Could not add tag. It could be a duplicate entry or an issue with the API server.', true)
                     this.setState(stateObj)
                 })
+        } else {
+            stateObj.templates.tag.uploading = false
+            this.addNotification('Validation Error', 'Could not validate data. Please ensure that a valid tag name is entered.', true)
+            this.setState(stateObj)
         }
     }
 

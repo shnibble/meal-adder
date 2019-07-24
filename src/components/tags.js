@@ -13,18 +13,23 @@ const Tags = ({ data, methods }) => {
         )
     }
 
-    const { name, uploading } = data.templates.tag
+    const { name } = data.templates.tag
     const { 
         handleTemplateTagNameChange,
         handleAddTag
     } = methods
 
+    let validated = true
+    if (!name.length) {
+        validated = false
+    }
+
     return (
         <>
             <PageTitle>Manage Tags</PageTitle>
             <FieldContainer title='New'>
-                <TextField label='Name' val={name} validation={(uploading)?'checking':null} onChangeFunction={handleTemplateTagNameChange} />
-                <AddButton val='Add Tag' callback={handleAddTag} />
+                <TextField label='Name' val={name} validation={(name.length > 0)?true:null} onChangeFunction={handleTemplateTagNameChange} />
+                <AddButton val='Add Tag' enabled={validated} callback={handleAddTag} />
             </FieldContainer>
         </>
     )
