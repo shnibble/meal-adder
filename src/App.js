@@ -29,7 +29,8 @@ const initialAppState = {
         loading: false,
         loaded: false,
         allCategories: [],
-        allOrigins: [],
+        // allOrigins: [],
+        allTimes: [],
         allTags: []
     },
     notifications: [],
@@ -38,8 +39,9 @@ const initialAppState = {
             uploading: false,
             name: '',
             description: '',
+            time: 1,
             categories: [],
-            origins: [],
+            // origins: [],
             tags: []
         },
         category: {
@@ -115,6 +117,12 @@ class App extends React.Component {
         this.setState(stateObj)
     }
 
+    handleTemplateMealTimeChange = (event) => {
+        const stateObj = {...this.state}
+        stateObj.templates.meal.time = event.target.value
+        this.setState(stateObj)
+    }
+
     handleTemplateMealCategoryChange = (event) => {
         const val = Number(event.target.value)
         const stateObj = {...this.state}
@@ -128,18 +136,18 @@ class App extends React.Component {
         this.setState(stateObj)
     }
 
-    handleTemplateMealOriginChange = (event) => {
-        const val = Number(event.target.value)
-        const stateObj = {...this.state}
-        const masterItem = stateObj.data.allOrigins.filter((cat) => cat.id === val)[0]
-        const activeIndex = stateObj.templates.meal.origins.map((e) => e.id).indexOf(val)
-        if (activeIndex !== -1) {
-            stateObj.templates.meal.origins.splice(activeIndex, 1)
-        } else {
-            stateObj.templates.meal.origins.push({ id: masterItem.id, name: masterItem.name })
-        }
-        this.setState(stateObj)
-    }
+    // handleTemplateMealOriginChange = (event) => {
+    //     const val = Number(event.target.value)
+    //     const stateObj = {...this.state}
+    //     const masterItem = stateObj.data.allOrigins.filter((cat) => cat.id === val)[0]
+    //     const activeIndex = stateObj.templates.meal.origins.map((e) => e.id).indexOf(val)
+    //     if (activeIndex !== -1) {
+    //         stateObj.templates.meal.origins.splice(activeIndex, 1)
+    //     } else {
+    //         stateObj.templates.meal.origins.push({ id: masterItem.id, name: masterItem.name })
+    //     }
+    //     this.setState(stateObj)
+    // }
 
     handleTemplateMealTagChange = (event) => {
         const val = Number(event.target.value)
@@ -160,11 +168,11 @@ class App extends React.Component {
         this.setState(stateObj)
     }
 
-    handleTemplateOriginNameChange = (event) => {
-        const stateObj = {...this.state}
-        stateObj.templates.origin.name = event.target.value
-        this.setState(stateObj)
-    }
+    // handleTemplateOriginNameChange = (event) => {
+    //     const stateObj = {...this.state}
+    //     stateObj.templates.origin.name = event.target.value
+    //     this.setState(stateObj)
+    // }
 
     handleTemplateTagNameChange = (event) => {
         const stateObj = {...this.state}
@@ -182,8 +190,9 @@ class App extends React.Component {
         if (
             this.state.templates.meal.name.length <= 0 ||
             this.state.templates.meal.description.length <= 0 ||
-            this.state.templates.meal.categories.length <= 0 || 
-            this.state.templates.meal.origins.length <= 0
+            this.state.templates.meal.categories.length <= 0 ||
+            this.state.templates.meal.time.length <= 0
+            // this.state.templates.meal.origins.length <= 0
         ) {
             validated = false
         } else {
@@ -191,8 +200,9 @@ class App extends React.Component {
                 key: this.state.connection.key,
                 name: this.state.templates.meal.name,
                 description: this.state.templates.meal.description,
+                time: this.state.templates.meal.time,
                 categories: this.state.templates.meal.categories.map(item => item.id),
-                origins: this.state.templates.meal.origins.map(item => item.id),
+                // origins: this.state.templates.meal.origins.map(item => item.id),
                 tags: this.state.templates.meal.tags.map(item => item.id) || []
             }
         }
@@ -204,8 +214,9 @@ class App extends React.Component {
                     stateObj.templates.meal.uploading = false
                     stateObj.templates.meal.name = ''
                     stateObj.templates.meal.description = ''
+                    stateObj.templates.meal.time = 1
                     stateObj.templates.meal.categories = []
-                    stateObj.templates.meal.origins = []
+                    // stateObj.templates.meal.origins = []
                     stateObj.templates.meal.tags = []
                     this.addNotification('Success', 'Successfully added new meal.')
                     this.setState(stateObj)
@@ -263,47 +274,47 @@ class App extends React.Component {
         }
     }
 
-    handleAddOrigin = async () => {
-        const stateObj = {...this.state}
-        stateObj.templates.origin.uploading = true
-        this.setState(stateObj)
+    // handleAddOrigin = async () => {
+    //     const stateObj = {...this.state}
+    //     stateObj.templates.origin.uploading = true
+    //     this.setState(stateObj)
 
-        let validated = true    
-        let data = {}
-        if (this.state.templates.origin.name <= 0) {
-            validated = false
-        } else {
-            data = {
-                key: this.state.connection.key,
-                name: this.state.templates.origin.name
-            }
-        }
+    //     let validated = true    
+    //     let data = {}
+    //     if (this.state.templates.origin.name <= 0) {
+    //         validated = false
+    //     } else {
+    //         data = {
+    //             key: this.state.connection.key,
+    //             name: this.state.templates.origin.name
+    //         }
+    //     }
 
-        if (validated) {
-            await axios 
-                .post(`${this.state.connection.location}/upload/origin`, data)
-                .then(result => {
-                    stateObj.data.allOrigins.push({
-                        id: result.data[0],
-                        name: data.name
-                    })
-                    stateObj.templates.origin.uploading = false
-                    stateObj.templates.origin.name = ''
-                    this.addNotification('Success', 'Successfully added new origin.')
-                    this.setState(stateObj)
-                })
-                .catch(() => {
-                    stateObj.templates.origin.uploading = false
-                    this.addNotification('Update Error', 'Could not add origin. It could be a duplicate entry or an issue with the API server.', true)
-                    this.setState(stateObj)
-                })
-        } else {
+    //     if (validated) {
+    //         await axios 
+    //             .post(`${this.state.connection.location}/upload/origin`, data)
+    //             .then(result => {
+    //                 stateObj.data.allOrigins.push({
+    //                     id: result.data[0],
+    //                     name: data.name
+    //                 })
+    //                 stateObj.templates.origin.uploading = false
+    //                 stateObj.templates.origin.name = ''
+    //                 this.addNotification('Success', 'Successfully added new origin.')
+    //                 this.setState(stateObj)
+    //             })
+    //             .catch(() => {
+    //                 stateObj.templates.origin.uploading = false
+    //                 this.addNotification('Update Error', 'Could not add origin. It could be a duplicate entry or an issue with the API server.', true)
+    //                 this.setState(stateObj)
+    //             })
+    //     } else {
 
-            stateObj.templates.origin.uploading = false
-            this.addNotification('Validation Error', 'Could not validate data. Please ensure that a valid origin name is entered.', true)
-            this.setState(stateObj)
-        }
-    }
+    //         stateObj.templates.origin.uploading = false
+    //         this.addNotification('Validation Error', 'Could not validate data. Please ensure that a valid origin name is entered.', true)
+    //         this.setState(stateObj)
+    //     }
+    // }
 
     handleAddTag = async () => {
         const stateObj = {...this.state}
@@ -353,8 +364,9 @@ class App extends React.Component {
         this.setState(stateObj)
 
         let categories = []
-        let origins = []
+        // let origins = []
         let tags = []
+        let times = []
         let error = false  
         
         await axios
@@ -364,9 +376,16 @@ class App extends React.Component {
                 error = true
                 return false
             })
+        // await axios
+        //     .get(`${this.state.connection.location}/meta/origins`)
+        //     .then(result => origins = result.data)
+        //     .catch(() => {
+        //         error = true
+        //         return false
+        //     })
         await axios
-            .get(`${this.state.connection.location}/meta/origins`)
-            .then(result => origins = result.data)
+            .get(`${this.state.connection.location}/meta/times`)
+            .then(result => times = result.data)
             .catch(() => {
                 error = true
                 return false
@@ -385,7 +404,8 @@ class App extends React.Component {
         stateObj.data.loading = false
         stateObj.data.loaded = !error
         stateObj.data.allCategories = categories
-        stateObj.data.allOrigins = origins
+        stateObj.data.allTimes = times
+        // stateObj.data.allOrigins = origins
         stateObj.data.allTags = tags
 
         await this.setState(stateObj)
@@ -397,11 +417,12 @@ class App extends React.Component {
             handleConnectionUpdate,
             handleTemplateMealNameChange,
             handleTemplateMealDescriptionChange,
+            handleTemplateMealTimeChange,
             handleTemplateMealCategoryChange, 
-            handleTemplateMealOriginChange, 
+            // handleTemplateMealOriginChange, 
             handleTemplateMealTagChange,
             handleTemplateCategoryNameChange,
-            handleTemplateOriginNameChange,
+            // handleTemplateOriginNameChange,
             handleTemplateTagNameChange,
             handleAddMeal,
             handleAddCategory,
@@ -412,11 +433,12 @@ class App extends React.Component {
             handleConnectionUpdate,
             handleTemplateMealNameChange,
             handleTemplateMealDescriptionChange,
+            handleTemplateMealTimeChange,
             handleTemplateMealCategoryChange,
-            handleTemplateMealOriginChange,
+            // handleTemplateMealOriginChange,
             handleTemplateMealTagChange,
             handleTemplateCategoryNameChange,
-            handleTemplateOriginNameChange,
+            // handleTemplateOriginNameChange,
             handleTemplateTagNameChange,
             handleAddMeal,
             handleAddCategory,
